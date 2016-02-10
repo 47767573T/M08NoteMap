@@ -29,7 +29,7 @@ public class NoteMap extends Application{
         // other setup code
         ref = new Firebase("https://blazing-heat-767.firebaseio.com");
 
-        ref.authWithPassword("Mim@firebase.com", "Mim", new Firebase.AuthResultHandler() {
+        /*ref.authWithPassword("Mim@firebase.com", "Mim", new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
                 System.out.println("User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
@@ -38,7 +38,7 @@ public class NoteMap extends Application{
             public void onAuthenticationError(FirebaseError firebaseError) {
                 // there was an error
             }
-        });
+        });*/
 
     }
 }

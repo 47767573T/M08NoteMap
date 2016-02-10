@@ -27,7 +27,7 @@ public class F_Main extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.lay_f_main, container, false);
 
         NoteMap app = (NoteMap)getActivity().getApplication();
         Firebase ref = app.getRef();

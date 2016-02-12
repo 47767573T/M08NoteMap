@@ -14,13 +14,6 @@ public class NoteMap extends Application{
 
     private Firebase ref;
 
-    public Firebase getRef() {
-        return ref;
-    }
-
-    public void setRef(Firebase ref) {
-        this.ref = ref;
-    }
 
     @Override
     public void onCreate() {
@@ -40,6 +33,14 @@ public class NoteMap extends Application{
             }
         });*/
 
+    }
+
+    public Firebase getRef() {
+        return ref;
+    }
+
+    public void setRef(Firebase ref) {
+        this.ref = ref;
     }
 }
 

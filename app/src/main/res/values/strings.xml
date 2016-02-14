@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">NoteMap</string>
     <string name="hello_world">Hello world!</string>
+    <string name="Mapa">Mapa (OSM)</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_a__map">Mapa (OSM)</string>
 </resources>

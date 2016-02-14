@@ -25,6 +25,8 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -56,9 +58,6 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
     private EditText etAnotado;
 
 
-
-
-
     public F_Main() {
     }
 
@@ -82,24 +81,25 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
 
         ref.child("prueba").child("Notas").child("nota1").setValue(notaInicial);
 
+
+
         addNotesEnFirebase(5, ref);     //Genera notas de coordenadas aleatorias;
 
-        ref.child("prueba").child("Notas")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        for (DataSnapshot notasSnapshot: snapshot.getChildren()){
-                            Nota nota = notasSnapshot.getValue(Nota.class);
-                            notasLista.add(nota);
-                            Log.e(nota.getTitulo(), nota.getDesc());
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(FirebaseError error) {
-                        msgToast(2, "DataListener de Firebase Cancelado");
-                    }
-                });
+        //Listener de Firebase
+        ref.child("prueba").child("Notas").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot notasSnapshot : snapshot.getChildren()) {
+                    Nota nota = notasSnapshot.getValue(Nota.class);
+                    notasLista.add(nota);
+                    Log.e(nota.getTitulo(), nota.getDesc());
+                }
+            }
+            @Override
+            public void onCancelled(FirebaseError error) {
+                msgToast(2, "DataListener de Firebase Cancelado");
+            }
+        });
 
 
         return view;
@@ -109,11 +109,11 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.imbtVoz:
-                Intent intHabla = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intHabla.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                Intent intentHabla = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intentHabla.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 
                 try {
-                    startActivityForResult(intHabla, CODIGO_SOLICITUD_RECONOCIMIENTO);
+                    startActivityForResult(intentHabla, CODIGO_SOLICITUD_RECONOCIMIENTO);
                     etAnotado.setText("");
 
                 } catch (ActivityNotFoundException a) {
@@ -125,6 +125,10 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
                 break;
 
             case R.id.imbtMap:
+                Intent intentMapa = new Intent(getActivity(), A_Map.class);
+                startActivity(intentMapa);
+
+
                 msgToast(1, lugarActual.getAltitude()+"-"+lugarActual.getLongitude());
                 break;
         }
@@ -170,8 +174,6 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
     public void setLocationListeners(Context context) {
         locManager = (LocationManager) getContext().getSystemService(context.LOCATION_SERVICE);
 
-        //locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, );
-
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return ;
@@ -187,7 +189,7 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
         locListener = this;
         if (location!=null) {
             lugarActual = location;
-           msgToast(1, "Localizacion actual: "+ lugarActual.getAltitude()+"-"+lugarActual.getLongitude());
+            msgToast(1, "Localizacion actual: "+ lugarActual.getAltitude()+"-"+lugarActual.getLongitude());
 
         }else{
             msgToast(2, "No se encuentra Location");

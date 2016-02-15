@@ -58,8 +58,7 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
     private EditText etAnotado;
 
 
-    public F_Main() {
-    }
+    public F_Main() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,7 +79,6 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
         Nota notaInicial = new Nota("Ecaib", "Instituto Poblenou", 41.39834, 2.20318);
 
         ref.child("prueba").child("Notas").child("nota1").setValue(notaInicial);
-
 
 
         addNotesEnFirebase(5, ref);     //Genera notas de coordenadas aleatorias;
@@ -109,7 +107,13 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.imbtVoz:
-                Intent intentHabla = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+                Intent intentMapa1 = new Intent(getActivity(), A_Map.class);
+                startActivity(intentMapa1);
+                msgToast(1, "intent para mapa");
+
+
+                /*Intent intentHabla = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 intentHabla.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 
                 try {
@@ -118,7 +122,7 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
 
                 } catch (ActivityNotFoundException a) {
                     msgToast(2, "reconocimiento de voz");
-                }
+                }*/
                 break;
 
             case R.id.imbtNota:
@@ -127,7 +131,6 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
             case R.id.imbtMap:
                 Intent intentMapa = new Intent(getActivity(), A_Map.class);
                 startActivity(intentMapa);
-
 
                 msgToast(1, lugarActual.getAltitude()+"-"+lugarActual.getLongitude());
                 break;
@@ -234,9 +237,7 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
 
             Nota nota = new Nota("titulo"+i, "Descripcion"+i, latDb, lonDb);
             fb.child("prueba").child("Notas").child("nota"+i).setValue(nota);
-
         }
-
     }
     //FIN METODOS VARIOS............................................................................
 

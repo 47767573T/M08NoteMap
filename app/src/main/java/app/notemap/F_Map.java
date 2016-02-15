@@ -1,5 +1,6 @@
 package app.notemap;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.OverlayManager;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
@@ -33,18 +35,19 @@ import java.util.LinkedList;
  */
 public class F_Map extends Fragment {
 
+    Firebase ref;
+
     MapController mapController;
+    MyLocationNewOverlay mlno;
     boolean hayControlZoom = true;
     boolean hayControlMultiTouch = true;
     boolean hayPrecisionOverlay = true;
     public ArrayList<Nota> notaLista;
-    public LinkedList<OverlayItem>notaMarkersList;
+    public LinkedList<OverlayItem> notaMarkersList;
 
-    public MapView mapView;
+    public MapView map;
 
-    public F_Map() {
-
-    }
+    public F_Map() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,7 +55,9 @@ public class F_Map extends Fragment {
         View rootMapView = inflater.inflate(R.layout.lay_f_map, container, false);
 
         NoteMap app = (NoteMap) getActivity().getApplication();
-        Firebase ref = app.getRef();
+        ref = app.getRef();
+        map = (MapView) rootMapView.findViewById(R.id.mapView);
+
 
         ref.child("prueba").child("Notas").addValueEventListener(new ValueEventListener() {
             @Override
@@ -67,11 +72,10 @@ public class F_Map extends Fragment {
         });
 
 
-        MapView mapView = (MapView) getActivity().findViewById(R.id.mapView);
-        mapView.setBuiltInZoomControls(hayControlZoom);
-        mapView.setMultiTouchControls(hayControlMultiTouch);
-        mapController = (MapController) mapView.getController();
-
+        map = (MapView) rootMapView.findViewById(R.id.mapView);
+        map.setBuiltInZoomControls(hayControlZoom);
+        map.setMultiTouchControls(hayControlMultiTouch);
+        mapController = (MapController) map.getController();
 
         Drawable marker = getResources().getDrawable(android.R.drawable.ic_input_get);
         int markerWidth = marker.getIntrinsicWidth();
@@ -80,17 +84,16 @@ public class F_Map extends Fragment {
 
         ResourceProxy resourceProxy = new DefaultResourceProxyImpl(getContext());
 
-        MyLocationNewOverlay mlno = new MyLocationNewOverlay(getContext(), mapView);
-        mlno.setDrawAccuracyEnabled(hayPrecisionOverlay);
+        mlno = new MyLocationNewOverlay(getContext(),new GpsMyLocationProvider(getContext()), map);
+        mlno.enableMyLocation();
+        //mlno.setDrawAccuracyEnabled(hayPrecisionOverlay);
 
-        mapView.getOverlays().add(mlno);
+        map.getOverlays().add(mlno);
 
-        ItemizedIconOverlay markersOverlay = new ItemizedIconOverlay<OverlayItem>
+        ItemizedIconOverlay<OverlayItem> markersOverlay = new ItemizedIconOverlay<>
                 (notaMarkersList, marker, null, resourceProxy);
-        mapView.getOverlays().add(markersOverlay);
+        map.getOverlays().add(markersOverlay);
 
-
-        //Añadir markers
 
 
         return rootMapView;
@@ -115,32 +118,30 @@ public class F_Map extends Fragment {
         if (notasSnapshot.getChildrenCount() != notaLista.size()){
             notaLista.clear();
             for (DataSnapshot notasFireBase : notasSnapshot.getChildren()) {
-                Nota nota = notasSnapshot.getValue(Nota.class);
+                Nota nota = notasFireBase.getValue(Nota.class);
                 notaLista.add(nota);
                 msgToast(3, "Añadiendo marcadores...");
                 Log.e(nota.getTitulo(), nota.getDesc());
             }
-            markersGetter(true);
+            markersFiller(true);
         }
-
     }
 
-    public void markersGetter (boolean markersNuevo){
+    public void markersFiller (boolean hayNuevosMarkers){
 
+        if (hayNuevosMarkers) {
+            for (int i = 0; i < notaLista.size(); i++) {
+                Double lat = (notaLista.get(i).getLatitud()) * 1E6;
+                Double lon = (notaLista.get(i).getLongitud()) * 1E6;
 
-        for (int i = 0 ; i < notaLista.size() ; i++) {
-            Double lat = (notaLista.get(i).getLatitud())*1E6;
-            Double lon = (notaLista.get(i).getLongitud())*1E6;
+                String titulo = (notaLista.get(i).getTitulo());
+                String desc = (notaLista.get(i).getDesc());
+                GeoPoint gp = new GeoPoint(lat, lon);
 
-            String titulo = (notaLista.get(i).getTitulo());
-            String desc = (notaLista.get(i).getDesc());
-            GeoPoint gp = new GeoPoint(lat, lon);
-
-            OverlayItem oli = new OverlayItem(String.valueOf(i), titulo, desc, gp);
-            notaMarkersList.add(oli);
+                OverlayItem overlayItem = new OverlayItem(String.valueOf(i), titulo, desc, gp);
+                notaMarkersList.add(overlayItem);
+            }
         }
-
-
     }
 
 }

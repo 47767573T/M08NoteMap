@@ -57,18 +57,15 @@ public class F_Map extends Fragment {
         NoteMap app = (NoteMap) getActivity().getApplication();
         ref = app.getRef();
         map = (MapView) rootMapView.findViewById(R.id.mapView);
-
+        notaMarkersList = new LinkedList<>();
 
         ref.child("prueba").child("Notas").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(DataSnapshot snapshot){
                 notasGetter(snapshot);
             }
-
             @Override
-            public void onCancelled(FirebaseError error) {
-                msgToast(2, "DataListener de Firebase Cancelado");
-            }
+            public void onCancelled(FirebaseError error) {msgToast(2, "DataListener de Firebase Cancelado");}
         });
 
 
@@ -94,8 +91,6 @@ public class F_Map extends Fragment {
                 (notaMarkersList, marker, null, resourceProxy);
         map.getOverlays().add(markersOverlay);
 
-
-
         return rootMapView;
     }
 
@@ -114,7 +109,7 @@ public class F_Map extends Fragment {
     }
 
     public void notasGetter (DataSnapshot notasSnapshot){
-
+        msgToast(1, String.valueOf(notaLista.size()));
         if (notasSnapshot.getChildrenCount() != notaLista.size()){
             notaLista.clear();
             for (DataSnapshot notasFireBase : notasSnapshot.getChildren()) {

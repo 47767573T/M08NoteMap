@@ -19,7 +19,7 @@ public class NoteMap extends Application{
     public void onCreate() {
         super.onCreate();
         Firebase.setAndroidContext(this);
-        // other setup code
+
         ref = new Firebase("https://blazing-heat-767.firebaseio.com");
 
         /*ref.authWithPassword("Mim@firebase.com", "Mim", new Firebase.AuthResultHandler() {

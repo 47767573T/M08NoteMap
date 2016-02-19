@@ -107,11 +107,6 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.imbtVoz:
-/*
-                Intent intentMapa1 = new Intent(getActivity(), A_Map.class);
-                startActivity(intentMapa1);
-                msgToast(1, "intent para mapa");
-
                 Intent intentHabla = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 intentHabla.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 
@@ -123,7 +118,7 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
                     msgToast(2, "reconocimiento de voz");
                 }
                 break;
-*/
+
             case R.id.imbtNota:
                 break;
 
@@ -131,8 +126,6 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
                 Intent intentMap = new Intent(getActivity(), A_Map.class);
                 startActivity(intentMap);
                 msgToast(1, "intent para mapa");
-
-                msgToast(1, lugarActual.getAltitude()+"-"+lugarActual.getLongitude());
                 break;
         }
     }
@@ -192,8 +185,6 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
         locListener = this;
         if (location!=null) {
             lugarActual = location;
-            msgToast(1, "Localizacion actual: "+ lugarActual.getLatitude()+"-"+lugarActual.getLongitude());
-
         }else{
             msgToast(2, "No se encuentra Location");
         }

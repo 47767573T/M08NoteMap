@@ -87,23 +87,6 @@ public class F_Map extends Fragment {
         setOverlays(getContext());
         drawMarkers(getContext());
 
-        Drawable marker = getResources().getDrawable(android.R.drawable.ic_input_get);
-        int markerWidth = marker.getIntrinsicWidth();
-        int markerHeight = marker.getIntrinsicHeight();
-        marker.setBounds(0, markerHeight, markerWidth, 0);
-
-        ResourceProxy resourceProxy = new DefaultResourceProxyImpl(getContext());
-
-        //mlno = new MyLocationNewOverlay(getContext(), new GpsMyLocationProvider(getContext()), map);
-        mlno.enableMyLocation();
-        //mlno.setDrawAccuracyEnabled(hayPrecisionOverlay);
-
-        map.getOverlays().add(mlno);
-
-        ItemizedIconOverlay<OverlayItem> markersOverlay = new ItemizedIconOverlay<>
-                (notaMarkersList, marker, null, resourceProxy);
-        map.getOverlays().add(markersOverlay);
-
         return rootMapView;
     }
 
@@ -170,7 +153,7 @@ public class F_Map extends Fragment {
 
 
     public void drawMarkers (Context context){
-        setAgrupacionMarkers(getContext(), radioAgrupacion);
+        setAgrupacionMarkers(context, radioAgrupacion);
 
         final Firebase notas = ref.child("prueba").child("Notas");
         notas.addValueEventListener(new ValueEventListener() {
@@ -183,22 +166,22 @@ public class F_Map extends Fragment {
                     GeoPoint gp = new GeoPoint(nota.getLatitud() ,nota.getLongitud());
 
                     notaMarker.setPosition(gp);
+                    notaMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                    notaMarker.setIcon(getResources().getDrawable(R.drawable.marker_default));
+                    notaMarker.setTitle(nota.getTitulo());
+                    notaMarker.setAlpha(0.5f);
 
-                    ...
+                    agrupacionNotaMarkers.add(notaMarker);
+                    msgToast(1, nota.getTitulo()+"añadida");
                 }
+                agrupacionNotaMarkers.invalidate();
+                map.invalidate();
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-
-
-
-
+            public void onCancelled(FirebaseError firebaseError) {  }
         });
     }
-
 
     public void setAgrupacionMarkers(Context context, int radio){
         agrupacionNotaMarkers = new RadiusMarkerClusterer(context);
@@ -229,35 +212,5 @@ public class F_Map extends Fragment {
         }
     }
 
-    public void notasGetter (DataSnapshot notasSnapshot){
-        msgToast(1, String.valueOf(notaLista.size()));
-        if (notasSnapshot.getChildrenCount() != notaLista.size()){
-            notaLista.clear();
-            for (DataSnapshot notasFireBase : notasSnapshot.getChildren()) {
-                Nota nota = notasFireBase.getValue(Nota.class);
-                notaLista.add(nota);
-                msgToast(3, "Añadiendo marcadores...");
-                Log.e(nota.getTitulo(), nota.getDesc());
-            }
-            markersFiller(true);
-        }
-    }
-
-    public void markersFiller (boolean hayNuevosMarkers){
-
-        if (hayNuevosMarkers) {
-            for (int i = 0; i < notaLista.size(); i++) {
-                Double lat = (notaLista.get(i).getLatitud()) * 1E6;
-                Double lon = (notaLista.get(i).getLongitud()) * 1E6;
-
-                String titulo = (notaLista.get(i).getTitulo());
-                String desc = (notaLista.get(i).getDesc());
-                GeoPoint gp = new GeoPoint(lat, lon);
-
-                OverlayItem overlayItem = new OverlayItem(String.valueOf(i), titulo, desc, gp);
-                notaMarkersList.add(overlayItem);
-            }
-        }
-    }
 
 }

@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
@@ -40,14 +41,17 @@ import static android.support.v4.content.ContextCompat.checkSelfPermission;
 public class F_Main extends Fragment implements View.OnClickListener, View.OnLongClickListener
         , LocationListener {
 
+    //Variables básicas
+    private Firebase ref;
+
     //Variables para reconocimiento de voz
     public static final int CODIGO_SOLICITUD_RECONOCIMIENTO = 1;
 
     //Variables para Localizacion
     public Location lugarActual;
-    public ArrayList<Location> lugares;
     LocationManager locManager;
     LocationListener locListener;
+    Map <String, Nota> notasTM = new TreeMap<>();
     ArrayList<Nota> notasLista;
 
 
@@ -72,16 +76,16 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
 
 
         NoteMap app = (NoteMap) getActivity().getApplication();
-        Firebase ref = app.getRef();
+        ref = app.getRef();
 
         //Pruebas con firebase
         ref.child("prueba").setValue("Mc Culo");
         Nota notaInicial = new Nota("Ecaib", "Instituto Poblenou", 41.39834, 2.20318);
 
-        ref.child("prueba").child("Notas").child("nota1").setValue(notaInicial);
+        ref.child("prueba").child("Notas").child("nota0").setValue(notaInicial);
 
 
-        addNotesEnFirebase(5, ref);     //Genera notas de coordenadas aleatorias;
+        //addNotesEnFirebase(5, ref);     //Genera notas de coordenadas aleatorias;
 
         //Listener de Firebase
         ref.child("prueba").child("Notas").addValueEventListener(new ValueEventListener() {
@@ -89,9 +93,10 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
             public void onDataChange(DataSnapshot snapshot) {
                 for (DataSnapshot notasSnapshot : snapshot.getChildren()) {
                     Nota nota = notasSnapshot.getValue(Nota.class);
-                    notasLista.add(nota);
-                    Log.e(nota.getTitulo(), nota.getDesc());
+
+                    notasTM.put(nota.getTitulo().toString(), nota);
                 }
+                msgToast(3, "Notas actualizadas en Firebase");
             }
             @Override
             public void onCancelled(FirebaseError error) {
@@ -134,8 +139,17 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
     public boolean onLongClick(View v) {
         switch (v.getId()) {
             case R.id.edtxNota:
+                int i = notasTM.size();
+                Nota nota = new Nota("titulo"+i
+                        , etAnotado.getText().toString()
+                        , lugarActual.getLongitude()
+                        , lugarActual.getLatitude());
+                ref.child("prueba").child("Notas").child("nota"+i).setValue(nota);
+
                 break;
         }
+
+        
         return false;
     }
 
@@ -162,7 +176,6 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
 
             ArrayList<String> listNotasPorVoz = intent.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             etAnotado.setText(listNotasPorVoz.get(0));  //Aqui escribe el resultado en el textView indicado
-            //msgToast(1, "captacion de voz");
         }
     }
 
@@ -177,6 +190,11 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
         locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
     }
 
+    /**
+     * Se requiere este metodo para acpetar permisos para los providers de localizacion
+     * @param accessFineLocation
+     * @return
+     */
     private int checkSelfPermission(String accessFineLocation) {return 0;}
 
 
@@ -226,7 +244,7 @@ public class F_Main extends Fragment implements View.OnClickListener, View.OnLon
             Double latDb = (Double.valueOf(lat+4130000))/100000;
             Double lonDb = (Double.valueOf(lon+220000))/100000;
 
-            Nota nota = new Nota("titulo"+i, "Descripcion"+i, latDb, lonDb);
+            Nota nota = new Nota("titulo"+i, "Descripcion"+i, lonDb, latDb);
             fb.child("prueba").child("Notas").child("nota"+i).setValue(nota);
         }
     }

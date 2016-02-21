@@ -1,18 +1,22 @@
 package app.notemap;
 
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class A_Main extends AppCompatActivity {
+
+    //private CustomViewPager viewPager;
+    //private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lay_a_main);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

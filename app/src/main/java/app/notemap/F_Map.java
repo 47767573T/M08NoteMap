@@ -62,8 +62,6 @@ public class F_Map extends Fragment {
     boolean hayControlMultiTouch = true;
     boolean hayCentradoInicial = true;
     boolean hayPrecisionOverlay = true;
-    public ArrayList<Nota> notaLista;
-    public LinkedList<OverlayItem> notaMarkersList;
     private int zoomInicial;
 
 
@@ -128,6 +126,7 @@ public class F_Map extends Fragment {
         );
 
         mlno.enableMyLocation();
+        mlno.setDrawAccuracyEnabled(hayPrecisionOverlay);
         mlno.runOnFirstFix(new Runnable() {
             @Override
             public void run() { iMapController.animateTo(mlno.getMyLocation()); }
@@ -169,10 +168,10 @@ public class F_Map extends Fragment {
                     notaMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                     notaMarker.setIcon(getResources().getDrawable(R.drawable.marker_default));
                     notaMarker.setTitle(nota.getTitulo());
-                    notaMarker.setAlpha(0.5f);
+                    notaMarker.setAlpha(0.7f);
 
                     agrupacionNotaMarkers.add(notaMarker);
-                    msgToast(1, nota.getTitulo()+"añadida");
+                    msgToast(1, nota.getTitulo()+" añadida");
                 }
                 agrupacionNotaMarkers.invalidate();
                 map.invalidate();
